@@ -31,11 +31,14 @@ jobs:
     - name: Launch Instance
       run: |
         echo "::set-env name=INSTANCE_ID::$(aws ec2 run-instances --image-id ami-0339cc11a730d260c --count 1 --instance-type t2.micro --key-name leonj --security-groups open | jq '.Instances[].InstanceId')"
-        echo $INSTANCE_ID
 
     - name: Wait for Instance
       run: |
-        aws ec2 wait instance-running --instance-ids "${{env.INSTANCE_ID}}"
+        aws ec2 wait instance-status-ok --instance-ids "${{env.INSTANCE_ID}}"
+        
+    - name: Run CodeDeploy
+      run: |
+        aws deploy create-deployment --application-name test --deployment-config-name CodeDeployDefault.OneAtATime --deployment-group-name test --description "My demo deployment" --github-location commitId=$GITHUB_SHA,repository=$GITHUB_REPOSITORY
         
     - name: Describe Images Post
       run: |
