@@ -24,11 +24,16 @@ jobs:
         aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
         aws-region: ap-southeast-1
       
-    - name: Describe Images
+    - name: Describe Images Pre
       run: |
-        aws ec2 describe-images
+        aws ec2 describe-instances --filters Name=instance-type,Values=t2.micro --query 'Reservations[*].Instances[*].{Instance:InstanceId,IP:PublicIpAddress,Image:ImageId}'
         
     - name: Launch Instance
       run: |
         aws ec2 run-instances --image-id ami-0339cc11a730d260c --count 1 --instance-type t2.micro --key-name leonj --security-groups open
+        
+    - name: Describe Images Post
+      run: |
+        aws ec2 describe-instances --filters Name=instance-type,Values=t2.micro --query 'Reservations[*].Instances[*].{Instance:InstanceId,IP:PublicIpAddress,Image:ImageId}'
+        
 
