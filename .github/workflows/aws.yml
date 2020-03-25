@@ -2,8 +2,9 @@
 # Store an IAM user access key in GitHub Actions secrets named `AWS_ACCESS_KEY_ID` and `AWS_SECRET_ACCESS_KEY`.
 
 on:
-  release:
-    types: [created]
+  push:
+    branches:
+    - master
 
 name: Deploy to Amazon EC2
 
