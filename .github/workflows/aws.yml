@@ -30,10 +30,17 @@ jobs:
         
     - name: Launch Instance
       run: |
-        aws ec2 run-instances --image-id ami-0339cc11a730d260c --count 1 --instance-type t2.micro --key-name leonj --security-groups open
+        echo "::set-env name=INSTANCE_ID::$(aws ec2 run-instances --image-id ami-0339cc11a730d260c --count 1 --instance-type t2.micro --key-name leonj --security-groups open)"
+        echo $INSTANCE_ID
+
+    - name: Wait for Instance
+      run: |
+        aws ec2 wait instance-running --instance-ids "${{env.INSTANCE_ID}}"
         
     - name: Describe Images Post
       run: |
         aws ec2 describe-instances --filters Name=instance-type,Values=t2.micro --query 'Reservations[*].Instances[*].{Instance:InstanceId,IP:PublicIpAddress,Image:ImageId}'
+        
+        
         
 
